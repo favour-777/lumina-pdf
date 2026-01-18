@@ -62,7 +62,7 @@ class StudyMaterialGenerator:
             "maxTokens": max_tokens
         }
         
-        run = await Actor.call_actor(
+        run = await Actor.call(
             actor_id='apify/chatgpt-gpt-4o-mini',
             run_input=run_input,
             memory_mbytes=512,

@@ -19,8 +19,28 @@ async def main():
         actor_input = await Actor.get_input() or {}
         
         # Extract configuration
-        file_urls = actor_input.get('fileUrls', '').strip().split('\n')
-        file_urls = [url.strip() for url in file_urls if url.strip()]
+        file_urls_str = actor_input.get('fileUrls', '').strip()
+        uploaded_files = actor_input.get('uploadedFiles', [])
+        
+        # Build list of files to process
+        file_urls = []
+        
+        # Add URLs from text input
+        if file_urls_str:
+            urls = [url.strip() for url in file_urls_str.split('\n') if url.strip()]
+            file_urls.extend(urls)
+        
+        # Add uploaded files
+        if uploaded_files:
+            for file_obj in uploaded_files:
+                if isinstance(file_obj, dict) and 'url' in file_obj:
+                    file_urls.append(file_obj['url'])
+        
+        # Validate we have something to process
+        if not file_urls:
+            Actor.log.error('No files provided')
+            await Actor.fail('Please provide document URLs or upload files')
+            return
         
         output_formats = actor_input.get('outputFormats', [
             'cornellNotes', 'flashcards', 'quiz', 'summary', 'mindMap'
@@ -29,12 +49,6 @@ async def main():
         num_flashcards = actor_input.get('numFlashcards', 30)
         num_quiz_questions = actor_input.get('numQuizQuestions', 20)
         difficulty_level = actor_input.get('difficultyLevel', 'mixed')
-        
-        # Validate input
-        if not file_urls:
-            Actor.log.error('No file URLs provided')
-            await Actor.fail('Please provide at least one document URL')
-            return
         
         Actor.log.info(f'Processing {len(file_urls)} document(s)')
         Actor.log.info(f'Output formats: {output_formats}')

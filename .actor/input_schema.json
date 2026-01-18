@@ -4,24 +4,43 @@
     "schemaVersion": 1,
     "properties": {
       "fileUrls": {
-        "title": "Document URLs",
+        "title": "Document URLs (Optional)",
         "type": "string",
-        "description": "URLs to your documents (PDF, DOCX, EPUB, TXT, MD, HTML, RTF). One per line for batch processing.",
+        "description": "URLs to your documents (PDF, DOCX, EPUB, TXT, MD, HTML, RTF). One per line for batch processing. Leave empty if uploading files instead.",
         "editor": "textarea",
         "example": "https://example.com/lecture.pdf\nhttps://example.com/notes.docx",
-        "prefill": "https://example.com/document.pdf"
+        "prefill": ""
+      },
+      "uploadedFiles": {
+        "title": "Upload Documents (Optional)",
+        "type": "array",
+        "description": "Upload your documents directly instead of providing URLs. Supports PDF, DOCX, EPUB, TXT, MD, HTML, RTF.",
+        "editor": "proxy",
+        "items": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "title": "File URL"
+            },
+            "name": {
+              "type": "string",
+              "title": "File Name"
+            }
+          }
+        }
       },
       "outputFormats": {
         "title": "Output Formats",
         "type": "array",
-        "description": "Select which study materials to generate (type to add)",
+        "description": "Select which study materials to generate (hold Ctrl/Cmd to select multiple)",
         "editor": "select",
         "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
+        "prefill": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
         "items": {
           "type": "string",
           "enum": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"]
-        },
-        "uniqueItems": true
+        }
       },
       "numFlashcards": {
         "title": "Number of Flashcards",
@@ -48,21 +67,7 @@
         "enum": ["easy", "medium", "hard", "mixed"],
         "default": "mixed",
         "editor": "select"
-      },
-      "useApifyIntegration": {
-        "title": "Use Apify Integration",
-        "type": "boolean",
-        "description": "Use built-in AI processing (recommended). Disable to use your own API key.",
-        "default": true,
-        "editor": "checkbox"
-      },
-      "anthropicApiKey": {
-        "title": "Anthropic API Key (Optional)",
-        "type": "string",
-        "description": "Your Claude API key. Only needed if 'Use Apify Integration' is disabled.",
-        "editor": "textfield",
-        "isSecret": true
       }
     },
     "required": ["fileUrls"]
-}
+  }

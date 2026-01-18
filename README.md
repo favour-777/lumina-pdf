@@ -109,13 +109,23 @@ Import directly to Notion with:
 
 ### Simple 3-Step Process
 
-1. **Provide Document URLs**
+1. **Provide Documents**
+   
+   **Option A - Paste URLs:**
    ```
    https://example.com/textbook-chapter.pdf
    https://example.com/lecture-notes.docx
    https://example.com/research-paper.pdf
    ```
-   One per line for batch processing.
+   
+   **Option B - Upload Files:**
+   - Click "Upload Documents"
+   - Select PDF, DOCX, EPUB, or other supported files
+   - Upload multiple files at once
+   
+   **Option C - Mix Both:**
+   - Upload some files AND paste URLs
+   - Perfect for combining local and online documents
 
 2. **Select Formats**
    - ✅ Cornell Notes
@@ -142,11 +152,14 @@ Import directly to Notion with:
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| **fileUrls** | string | required | Document URLs (one per line) |
+| **fileUrls** | string | optional | Document URLs (one per line) |
+| **uploadedFiles** | array | optional | Uploaded documents (alternative to URLs) |
 | **outputFormats** | array | All | Cornell Notes, Flashcards, Quiz, Summary, Mind Map |
 | **numFlashcards** | integer | 30 | Number of flashcards (5-100) |
 | **numQuizQuestions** | integer | 20 | Number of quiz questions (5-50) |
 | **difficultyLevel** | string | mixed | easy/medium/hard/mixed |
+
+**Note:** You must provide either `fileUrls` OR `uploadedFiles` (or both).
 | **useApifyIntegration** | boolean | true | Use built-in processing (no API key needed) |
 | **anthropicApiKey** | string | optional | Your Claude API key for unlimited processing |
 
