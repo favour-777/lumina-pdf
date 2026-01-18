@@ -1,56 +1,56 @@
 {
-    "title": "Lumina PDF Input",
-    "type": "object",
-    "schemaVersion": 1,
-    "properties": {
-      "fileUrls": {
-        "title": "Document URLs",
+  "title": "Lumina PDF Input",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "fileUrls": {
+      "title": "📄 Document URLs",
+      "type": "string",
+      "description": "Paste your document links here (one per line). Supports PDF, Word, PowerPoint, Excel, EPUB, and more.",
+      "editor": "textarea",
+      "example": "https://example.com/lecture.pdf\nhttps://example.com/notes.docx\nhttps://example.com/slides.pptx",
+      "prefill": ""
+    },
+    "outputFormats": {
+      "title": "📚 Study Materials to Generate",
+      "type": "array",
+      "description": "Choose which study materials you want",
+      "editor": "select",
+      "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
+      "prefill": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
+      "items": {
         "type": "string",
-        "description": "URLs to your documents (PDF, DOCX, EPUB, TXT, MD, HTML, RTF). One per line for batch processing.",
-        "editor": "textarea",
-        "example": "https://example.com/lecture.pdf\nhttps://example.com/notes.docx",
-        "prefill": ""
-      },
-      "outputFormats": {
-        "title": "Output Formats",
-        "type": "array",
-        "description": "Select which study materials to generate (hold Ctrl/Cmd to select multiple)",
-        "editor": "select",
-        "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
-        "prefill": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
-        "items": {
-          "type": "string",
-          "enum": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"]
-        },
-        "uniqueItems": true
-      },
-      "numFlashcards": {
-        "title": "Number of Flashcards",
-        "type": "integer",
-        "description": "How many flashcards to generate (5-100)",
-        "minimum": 5,
-        "maximum": 100,
-        "default": 30,
-        "editor": "number"
-      },
-      "numQuizQuestions": {
-        "title": "Number of Quiz Questions",
-        "type": "integer",
-        "description": "How many quiz questions to generate (5-50)",
-        "minimum": 5,
-        "maximum": 50,
-        "default": 20,
-        "editor": "number"
-      },
-      "difficultyLevel": {
-        "title": "Difficulty Level",
-        "type": "string",
-        "description": "Difficulty level for flashcards and quiz",
-        "enum": ["easy", "medium", "hard", "mixed"],
-        "default": "mixed",
-        "editor": "select"
+        "enum": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
+        "enumTitles": ["📝 Cornell Notes", "🎴 Flashcards", "📊 Practice Quiz", "📋 Summary", "🗺️ Mind Map"]
       }
     },
-    "required": ["fileUrls"]
-  }
-  
+    "numFlashcards": {
+      "title": "🎴 Number of Flashcards",
+      "type": "integer",
+      "description": "How many flashcards to create (5-100)",
+      "minimum": 5,
+      "maximum": 100,
+      "default": 30,
+      "editor": "number"
+    },
+    "numQuizQuestions": {
+      "title": "📊 Number of Quiz Questions",
+      "type": "integer",
+      "description": "How many multiple-choice questions to generate (5-50)",
+      "minimum": 5,
+      "maximum": 50,
+      "default": 20,
+      "editor": "number"
+    },
+    "difficultyLevel": {
+      "title": "⚡ Difficulty Level",
+      "type": "string",
+      "description": "Choose the difficulty of flashcards and quiz",
+      "enum": ["easy", "medium", "hard", "mixed"],
+      "enumTitles": ["😊 Easy", "😐 Medium", "😤 Hard", "🎯 Mixed"],
+      "default": "mixed",
+      "editor": "select"
+    }
+  },
+  "required": ["fileUrls"]
+}

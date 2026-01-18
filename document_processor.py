@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup
 import ebooklib
 from ebooklib import epub
 from striprtf.striprtf import rtf_to_text
+from pptx import Presentation
+from openpyxl import load_workbook
 import re
 
 
@@ -23,6 +25,8 @@ class DocumentProcessor:
     SUPPORTED_FORMATS = {
         'pdf': ['.pdf'],
         'docx': ['.docx', '.doc'],
+        'pptx': ['.pptx', '.ppt'],
+        'xlsx': ['.xlsx', '.xls'],
         'txt': ['.txt', '.text'],
         'markdown': ['.md', '.markdown'],
         'html': ['.html', '.htm'],
@@ -91,6 +95,10 @@ class DocumentProcessor:
         elif content.startswith(b'PK\x03\x04'):  # ZIP-based formats
             if b'word/' in content[:1000]:
                 return 'docx'
+            elif b'ppt/' in content[:1000]:
+                return 'pptx'
+            elif b'xl/' in content[:1000]:
+                return 'xlsx'
             elif b'EPUB' in content[:100]:
                 return 'epub'
         elif content.startswith(b'{\\rtf'):
@@ -106,6 +114,8 @@ class DocumentProcessor:
         extractors = {
             'pdf': self._extract_pdf,
             'docx': self._extract_docx,
+            'pptx': self._extract_pptx,
+            'xlsx': self._extract_xlsx,
             'txt': self._extract_txt,
             'markdown': self._extract_txt,
             'html': self._extract_html,
@@ -188,6 +198,35 @@ class DocumentProcessor:
         rtf_text = await self._extract_txt(content)
         text = rtf_to_text(rtf_text)
         return text
+    
+    async def _extract_pptx(self, content: bytes) -> str:
+        """Extract text from PowerPoint"""
+        pptx_file = BytesIO(content)
+        prs = Presentation(pptx_file)
+        
+        text_parts = []
+        for slide_num, slide in enumerate(prs.slides, 1):
+            text_parts.append(f"\n--- Slide {slide_num} ---\n")
+            for shape in slide.shapes:
+                if hasattr(shape, "text") and shape.text.strip():
+                    text_parts.append(shape.text)
+        
+        return '\n\n'.join(text_parts)
+    
+    async def _extract_xlsx(self, content: bytes) -> str:
+        """Extract text from Excel"""
+        xlsx_file = BytesIO(content)
+        wb = load_workbook(xlsx_file, data_only=True)
+        
+        text_parts = []
+        for sheet in wb.worksheets:
+            text_parts.append(f"\n=== Sheet: {sheet.title} ===\n")
+            for row in sheet.iter_rows(values_only=True):
+                row_text = '\t'.join([str(cell) if cell is not None else '' for cell in row])
+                if row_text.strip():
+                    text_parts.append(row_text)
+        
+        return '\n'.join(text_parts)
     
     def _clean_text(self, text: str) -> str:
         """Clean and normalize extracted text"""

@@ -78,17 +78,13 @@ Import directly to Notion with:
 ### Fully Supported ✅
 - **PDF** (.pdf) - Research papers, textbooks, articles
 - **Microsoft Word** (.docx, .doc) - Lecture notes, reports
+- **PowerPoint** (.pptx, .ppt) - Presentation slides, lectures
+- **Excel** (.xlsx, .xls) - Data tables, organized notes
 - **EPUB** (.epub) - Ebooks, digital publications
 - **Plain Text** (.txt) - Simple notes and documents
 - **Markdown** (.md) - Documentation, wikis
 - **HTML** (.html, .htm) - Web articles, saved pages
 - **Rich Text Format** (.rtf) - Formatted documents
-
-### Coming Soon 🔜
-- PowerPoint (.pptx) - Presentation slides
-- Excel (.xlsx) - Data tables and notes
-- OpenDocument (.odt, .ods) - LibreOffice documents
-- LaTeX (.tex) - Academic papers
 
 ---
 
@@ -109,23 +105,13 @@ Import directly to Notion with:
 
 ### Simple 3-Step Process
 
-1. **Provide Documents**
-   
-   **Option A - Paste URLs:**
+1. **Paste Document URLs**
    ```
    https://example.com/textbook-chapter.pdf
-   https://example.com/lecture-notes.docx
+   https://example.com/lecture-slides.pptx
    https://example.com/research-paper.pdf
    ```
-   
-   **Option B - Upload Files:**
-   - Click "Upload Documents"
-   - Select PDF, DOCX, EPUB, or other supported files
-   - Upload multiple files at once
-   
-   **Option C - Mix Both:**
-   - Upload some files AND paste URLs
-   - Perfect for combining local and online documents
+   One per line for batch processing.
 
 2. **Select Formats**
    - ✅ Cornell Notes
@@ -152,14 +138,11 @@ Import directly to Notion with:
 
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
-| **fileUrls** | string | optional | Document URLs (one per line) |
-| **uploadedFiles** | array | optional | Uploaded documents (alternative to URLs) |
+| **fileUrls** | string | required | Document URLs (one per line) |
 | **outputFormats** | array | All | Cornell Notes, Flashcards, Quiz, Summary, Mind Map |
 | **numFlashcards** | integer | 30 | Number of flashcards (5-100) |
 | **numQuizQuestions** | integer | 20 | Number of quiz questions (5-50) |
 | **difficultyLevel** | string | mixed | easy/medium/hard/mixed |
-
-**Note:** You must provide either `fileUrls` OR `uploadedFiles` (or both).
 | **useApifyIntegration** | boolean | true | Use built-in processing (no API key needed) |
 | **anthropicApiKey** | string | optional | Your Claude API key for unlimited processing |
 

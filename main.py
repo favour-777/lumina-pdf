@@ -19,27 +19,12 @@ async def main():
         actor_input = await Actor.get_input() or {}
         
         # Extract configuration
-        file_urls_str = actor_input.get('fileUrls', '').strip()
-        uploaded_files = actor_input.get('uploadedFiles', [])
+        file_urls = actor_input.get('fileUrls', '').strip().split('\n')
+        file_urls = [url.strip() for url in file_urls if url.strip()]
         
-        # Build list of files to process
-        file_urls = []
-        
-        # Add URLs from text input
-        if file_urls_str:
-            urls = [url.strip() for url in file_urls_str.split('\n') if url.strip()]
-            file_urls.extend(urls)
-        
-        # Add uploaded files
-        if uploaded_files:
-            for file_obj in uploaded_files:
-                if isinstance(file_obj, dict) and 'url' in file_obj:
-                    file_urls.append(file_obj['url'])
-        
-        # Validate we have something to process
         if not file_urls:
-            Actor.log.error('No files provided')
-            await Actor.fail('Please provide document URLs or upload files')
+            Actor.log.error('No document URLs provided')
+            await Actor.fail('Please provide at least one document URL')
             return
         
         output_formats = actor_input.get('outputFormats', [
