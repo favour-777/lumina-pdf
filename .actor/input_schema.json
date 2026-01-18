@@ -14,15 +14,14 @@
       "outputFormats": {
         "title": "Output Formats",
         "type": "array",
-        "description": "Select which study materials to generate",
+        "description": "Select which study materials to generate (hold Ctrl/Cmd to select multiple)",
         "editor": "select",
-        "isMultiple": true,
         "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
+        "prefill": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
         "items": {
           "type": "string",
           "enum": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"]
-        },
-        "uniqueItems": true
+        }
       },
       "numFlashcards": {
         "title": "Number of Flashcards",
