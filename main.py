@@ -151,6 +151,9 @@ async def main():
                     'processedAt': datetime.utcnow().isoformat() + 'Z'
                 })
         
+        # Clean up
+        await doc_processor.close()
+        
         Actor.log.info('All documents processed successfully!')
 
 

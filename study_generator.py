@@ -65,18 +65,58 @@ class StudyMaterialGenerator:
         """Call Claude API"""
         
         if self.use_apify:
-            # Use Apify's built-in integration
-            from apify import Actor
-            response = await Actor.call_task(
-                task_id='anthropic/claude-chat',
-                task_input={
-                    'model': 'claude-sonnet-4-20250514',
-                    'system': system,
-                    'prompt': prompt,
-                    'maxTokens': max_tokens
-                }
-            )
-            return response['output']['text']
+            # Use Apify's built-in integration via HTTP
+            import aiohttp
+            import os
+            
+            apify_token = os.environ.get('APIFY_TOKEN')
+            if not apify_token:
+                raise ValueError("APIFY_TOKEN not found in environment")
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    'https://api.apify.com/v2/acts/apify~anthropic-claude-scraper/runs',
+                    headers={'Authorization': f'Bearer {apify_token}'},
+                    json={
+                        'model': 'claude-sonnet-4-20250514',
+                        'systemPrompt': system,
+                        'userPrompt': prompt,
+                        'maxTokens': max_tokens
+                    }
+                ) as resp:
+                    if resp.status != 201:
+                        raise Exception(f"Apify API error: {resp.status}")
+                    
+                    run_data = await resp.json()
+                    run_id = run_data['data']['id']
+                    
+                    # Poll for completion
+                    import asyncio
+                    for _ in range(60):  # 60 attempts, 2 seconds each = 2 minutes max
+                        await asyncio.sleep(2)
+                        
+                        async with session.get(
+                            f'https://api.apify.com/v2/actor-runs/{run_id}',
+                            headers={'Authorization': f'Bearer {apify_token}'}
+                        ) as status_resp:
+                            status_data = await status_resp.json()
+                            status = status_data['data']['status']
+                            
+                            if status == 'SUCCEEDED':
+                                # Get output
+                                async with session.get(
+                                    f'https://api.apify.com/v2/actor-runs/{run_id}/dataset/items',
+                                    headers={'Authorization': f'Bearer {apify_token}'}
+                                ) as output_resp:
+                                    output_data = await output_resp.json()
+                                    if output_data and len(output_data) > 0:
+                                        return output_data[0].get('text', '')
+                                    raise Exception("No output from Claude")
+                            
+                            elif status in ['FAILED', 'ABORTED', 'TIMED-OUT']:
+                                raise Exception(f"Claude run {status}")
+                    
+                    raise Exception("Claude run timed out")
         else:
             # Use direct API
             message = self.client.messages.create(

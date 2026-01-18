@@ -36,7 +36,8 @@ class DocumentProcessor:
     async def download_file(self, url: str) -> dict:
         """Download file from URL and detect format"""
         if not self.session:
-            self.session = aiohttp.ClientSession()
+            timeout = aiohttp.ClientTimeout(total=300)  # 5 minute timeout
+            self.session = aiohttp.ClientSession(timeout=timeout)
         
         async with self.session.get(url) as response:
             if response.status != 200:
