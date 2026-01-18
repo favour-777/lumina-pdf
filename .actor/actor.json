@@ -1,20 +1,52 @@
 {
   "actorSpecification": 1,
   "name": "lumina-pdf",
-  "title": "Lumina PDF - AI-Powered Document Study Companion",
-  "description": "Transform any document (PDF, DOCX, EPUB, etc.) into professional study materials with AI. Generate Cornell Notes, flashcards, quizzes, mind maps, and more.",
+  "title": "Lumina PDF: AI-Powered Document Study Companion",
+  "description": "Transform PDFs, DOCX, EPUB and more into Cornell Notes, Anki flashcards, and interactive quizzes. Professional PDFs, Notion exports, and more.",
   "version": "1.0.0",
   "meta": {
-    "templateId": "python-start"
+      "templateId": "python-start"
   },
   "input": "./input_schema.json",
   "dockerfile": "./Dockerfile",
   "readme": "./README.md",
-  "categories": [
-    "EDUCATION",
-    "AI"
-  ],
-  "stats": {
-    "rating": 5.0
+  "categories": ["EDUCATION", "AI"],
+  "storages": {
+      "dataset": {
+          "actorSpecification": 1,
+          "title": "Lumina Study Materials",
+          "views": {
+              "overview": {
+                  "title": "Study Materials Overview",
+                  "transformation": {
+                      "fields": [
+                          "fileId",
+                          "filename",
+                          "sourceUrl",
+                          "format",
+                          "statistics.estimatedReadTime",
+                          "statistics.flashcardCount",
+                          "statistics.quizQuestionCount",
+                          "pdfUrl",
+                          "status"
+                      ]
+                  },
+                  "display": {
+                      "component": "table",
+                      "properties": {
+                          "fileId": { "label": "File ID" },
+                          "filename": { "label": "Document" },
+                          "sourceUrl": { "label": "Source URL" },
+                          "format": { "label": "Format" },
+                          "statistics.estimatedReadTime": { "label": "Read Time" },
+                          "statistics.flashcardCount": { "label": "Flashcards" },
+                          "statistics.quizQuestionCount": { "label": "Questions" },
+                          "pdfUrl": { "label": "PDF Link" },
+                          "status": { "label": "Status" }
+                      }
+                  }
+              }
+          }
+      }
   }
 }
