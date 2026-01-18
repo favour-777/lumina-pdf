@@ -15,7 +15,8 @@
         "title": "Output Formats",
         "type": "array",
         "description": "Select which study materials to generate",
-        "editor": "json",
+        "editor": "select",
+        "isMultiple": true,
         "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
         "items": {
           "type": "string",
@@ -48,20 +49,6 @@
         "enum": ["easy", "medium", "hard", "mixed"],
         "default": "mixed",
         "editor": "select"
-      },
-      "useApifyIntegration": {
-        "title": "Use Apify Integration",
-        "type": "boolean",
-        "description": "Use built-in AI processing (recommended). Disable to use your own API key.",
-        "default": true,
-        "editor": "checkbox"
-      },
-      "anthropicApiKey": {
-        "title": "Anthropic API Key (Optional)",
-        "type": "string",
-        "description": "Your Claude API key. Only needed if 'Use Apify Integration' is disabled.",
-        "editor": "textfield",
-        "isSecret": true
       }
     },
     "required": ["fileUrls"]
