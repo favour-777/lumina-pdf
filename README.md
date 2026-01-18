@@ -134,7 +134,7 @@ Import directly to Notion with:
 **Flashcard Count**: 5-100 cards  
 **Quiz Questions**: 5-50 questions  
 **Difficulty**: Easy, Medium, Hard, or Mixed  
-**API Key**: Optional - use your own Claude API key for unlimited processing
+**No API Key Required**: Uses your Apify credits automatically
 
 ---
 
@@ -376,23 +376,26 @@ Import directly to Notion with:
 
 ## 📈 Pricing
 
+### Apify Credits
+Lumina PDF uses your Apify platform credits automatically - no external API keys needed!
+
+**Cost per document:**
+- 💰 **Small documents** (<10 pages): ~$0.001-0.003
+- 💰 **Medium documents** (10-50 pages): ~$0.003-0.008
+- 💰 **Large documents** (50+ pages): ~$0.008-0.015
+
 ### Free Tier
-- ✅ 5 documents per month
-- ✅ All output formats
-- ✅ Full feature access
-- ✅ No credit card required
+- ✅ **Apify free tier**: $5 free credits monthly
+- ✅ **~500-5,000 documents** per month on free tier
+- ✅ All output formats included
+- ✅ No external accounts needed
 
-### Pay-As-You-Go
-- 💰 $0.003 - $0.010 per document
-- 💰 Depends on document length
-- 💰 No subscription required
-- 💰 Only pay for what you use
+### Paid Plans
+- 💳 **Personal**: $49/month for unlimited processing
+- 💳 **Team**: Custom pricing for high volume
+- 💳 **Pay-as-you-go**: Only pay for what you use
 
-### Bring Your Own Key
-- 🔑 Use your Anthropic API key
-- 🔑 Pay Claude directly (~$0.003-0.015 per document)
-- 🔑 Unlimited processing
-- 🔑 Full control over costs
+**No external API keys. No subscriptions. Just use your Apify credits!**
 
 ---
 

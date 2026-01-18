@@ -1,30 +1,19 @@
 """
-Study Material Generator - Uses Claude AI to generate study materials
+Study Material Generator - Uses AI to generate study materials
 """
 
-import anthropic
+from apify import Actor
 import json
 import re
 from typing import Dict, List, Any
 
 
 class StudyMaterialGenerator:
-    """Generate study materials using Claude AI"""
+    """Generate study materials using AI via Apify's GPT-4o-mini actor"""
     
-    def __init__(self, api_key: str = None, use_apify: bool = True):
-        """
-        Initialize generator
-        
-        Args:
-            api_key: Anthropic API key (optional if using Apify integration)
-            use_apify: Use Apify's built-in Claude integration
-        """
-        self.use_apify = use_apify and not api_key
-        
-        if api_key:
-            self.client = anthropic.Anthropic(api_key=api_key)
-        elif not use_apify:
-            raise ValueError("Must provide api_key or set use_apify=True")
+    def __init__(self):
+        """Initialize generator - no API key needed, uses Apify credits"""
+        pass
     
     async def generate_materials(
         self,
@@ -39,7 +28,6 @@ class StudyMaterialGenerator:
         
         materials = {}
         
-        # Generate each format
         if 'summary' in formats:
             materials['summary'] = await self._generate_summary(text, metadata)
         
@@ -61,74 +49,55 @@ class StudyMaterialGenerator:
         
         return materials
     
-    async def _call_claude(self, system: str, prompt: str, max_tokens: int = 4000) -> str:
-        """Call Claude API"""
+    async def _call_gpt(self, system: str, user_prompt: str, max_tokens: int = 4000) -> str:
+        """Call GPT-4o-mini via Apify actor"""
         
-        if self.use_apify:
-            # Use Apify's built-in integration via HTTP
-            import aiohttp
-            import os
-            
-            apify_token = os.environ.get('APIFY_TOKEN')
-            if not apify_token:
-                raise ValueError("APIFY_TOKEN not found in environment")
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    'https://api.apify.com/v2/acts/apify~anthropic-claude-scraper/runs',
-                    headers={'Authorization': f'Bearer {apify_token}'},
-                    json={
-                        'model': 'claude-sonnet-4-20250514',
-                        'systemPrompt': system,
-                        'userPrompt': prompt,
-                        'maxTokens': max_tokens
-                    }
-                ) as resp:
-                    if resp.status != 201:
-                        raise Exception(f"Apify API error: {resp.status}")
-                    
-                    run_data = await resp.json()
-                    run_id = run_data['data']['id']
-                    
-                    # Poll for completion
-                    import asyncio
-                    for _ in range(60):  # 60 attempts, 2 seconds each = 2 minutes max
-                        await asyncio.sleep(2)
-                        
-                        async with session.get(
-                            f'https://api.apify.com/v2/actor-runs/{run_id}',
-                            headers={'Authorization': f'Bearer {apify_token}'}
-                        ) as status_resp:
-                            status_data = await status_resp.json()
-                            status = status_data['data']['status']
-                            
-                            if status == 'SUCCEEDED':
-                                # Get output
-                                async with session.get(
-                                    f'https://api.apify.com/v2/actor-runs/{run_id}/dataset/items',
-                                    headers={'Authorization': f'Bearer {apify_token}'}
-                                ) as output_resp:
-                                    output_data = await output_resp.json()
-                                    if output_data and len(output_data) > 0:
-                                        return output_data[0].get('text', '')
-                                    raise Exception("No output from Claude")
-                            
-                            elif status in ['FAILED', 'ABORTED', 'TIMED-OUT']:
-                                raise Exception(f"Claude run {status}")
-                    
-                    raise Exception("Claude run timed out")
-        else:
-            # Use direct API
-            message = self.client.messages.create(
-                model='claude-sonnet-4-20250514',
-                max_tokens=max_tokens,
-                system=system,
-                messages=[{
-                    'role': 'user',
-                    'content': prompt
-                }]
-            )
-            return message.content[0].text
+        run_input = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.7,
+            "maxTokens": max_tokens
+        }
+        
+        run = await Actor.call_actor(
+            actor_id='apify/chatgpt-gpt-4o-mini',
+            run_input=run_input,
+            memory_mbytes=512,
+            timeout_secs=300
+        )
+        
+        # Get dataset items from the run
+        dataset_id = run.get('defaultDatasetId')
+        if not dataset_id:
+            raise Exception("No dataset returned from GPT call")
+        
+        dataset_items = await Actor.apify_client.dataset(dataset_id).list_items()
+        
+        if not dataset_items or not dataset_items.items:
+            raise Exception("No response from GPT")
+        
+        # Extract the response text
+        response_item = dataset_items.items[0]
+        
+        # Handle different response formats
+        if isinstance(response_item, dict):
+            if 'choices' in response_item:
+                return response_item['choices'][0]['message']['content']
+            elif 'message' in response_item:
+                return response_item['message']['content']
+            elif 'content' in response_item:
+                return response_item['content']
+            elif 'text' in response_item:
+                return response_item['text']
+        
+        # If we have a string, return it
+        if isinstance(response_item, str):
+            return response_item
+        
+        raise Exception(f"Unexpected response format: {type(response_item)}")
     
     async def _generate_summary(self, text: str, metadata: Dict) -> Dict:
         """Generate executive summary with key points"""
@@ -153,7 +122,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
     "conclusion": "Final takeaway or conclusion"
 }}"""
         
-        response = await self._call_claude(system, prompt, max_tokens=2000)
+        response = await self._call_gpt(system, prompt, max_tokens=2000)
         return self._parse_json_response(response)
     
     async def _generate_cornell_notes(self, text: str, metadata: Dict) -> Dict:
@@ -177,7 +146,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
 
 Generate 10-15 cue-note pairs that cover the main concepts."""
         
-        response = await self._call_claude(system, prompt, max_tokens=3000)
+        response = await self._call_gpt(system, prompt, max_tokens=3000)
         return self._parse_json_response(response)
     
     async def _generate_flashcards(
@@ -219,7 +188,7 @@ Respond with ONLY a JSON array (no markdown, no backticks) with this structure:
 
 Make flashcards that test real understanding, not just memorization."""
         
-        response = await self._call_claude(system, prompt, max_tokens=4000)
+        response = await self._call_gpt(system, prompt, max_tokens=4000)
         return self._parse_json_response(response)
     
     async def _generate_quiz(
@@ -257,7 +226,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
 
 Create questions that test understanding, not just recall."""
         
-        response = await self._call_claude(system, prompt, max_tokens=4000)
+        response = await self._call_gpt(system, prompt, max_tokens=4000)
         return self._parse_json_response(response)
     
     async def _generate_mind_map(self, text: str, metadata: Dict) -> str:
@@ -286,7 +255,7 @@ mindmap
 
 Keep it clear and organized with 3-5 main branches."""
         
-        response = await self._call_claude(system, prompt, max_tokens=1500)
+        response = await self._call_gpt(system, prompt, max_tokens=1500)
         
         # Clean up the response
         mermaid_code = response.strip()
@@ -296,7 +265,7 @@ Keep it clear and organized with 3-5 main branches."""
         return mermaid_code.strip()
     
     def _parse_json_response(self, response: str) -> Any:
-        """Parse JSON from Claude response, handling markdown code blocks"""
+        """Parse JSON from AI response, handling markdown code blocks"""
         
         # Remove markdown code blocks if present
         response = response.strip()

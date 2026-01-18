@@ -1,9 +1,6 @@
 # Apify SDK
 apify>=2.0.0
 
-# AI / API
-anthropic>=0.40.0
-
 # Document Processing
 PyPDF2>=3.0.0
 python-docx>=1.1.0

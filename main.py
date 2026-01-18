@@ -29,8 +29,6 @@ async def main():
         num_flashcards = actor_input.get('numFlashcards', 30)
         num_quiz_questions = actor_input.get('numQuizQuestions', 20)
         difficulty_level = actor_input.get('difficultyLevel', 'mixed')
-        use_apify_integration = actor_input.get('useApifyIntegration', True)
-        anthropic_api_key = actor_input.get('anthropicApiKey')
         
         # Validate input
         if not file_urls:
@@ -43,10 +41,7 @@ async def main():
         
         # Initialize processors
         doc_processor = DocumentProcessor()
-        study_gen = StudyMaterialGenerator(
-            api_key=anthropic_api_key,
-            use_apify=use_apify_integration
-        )
+        study_gen = StudyMaterialGenerator()
         export_mgr = ExportManager()
         
         # Process each document
