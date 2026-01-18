@@ -1,20 +1,20 @@
 {
-    "actorSpecification": 1,
-    "name": "lumina-pdf",
-    "title": "Lumina PDF - AI-Powered Document Study Companion",
-    "description": "Transform any document (PDF, DOCX, EPUB, etc.) into professional study materials with AI. Generate Cornell Notes, flashcards, quizzes, mind maps, and more.",
-    "version": "1.0.0",
-    "meta": {
-      "templateId": "python-start"
-    },
-    "input": "./.actor/input_schema.json",
-    "dockerfile": "./Dockerfile",
-    "readme": "./README.md",
-    "categories": [
-      "EDUCATION",
-      "AI"
-    ],
-    "stats": {
-      "rating": 5.0
-    }
+  "actorSpecification": 1,
+  "name": "lumina-pdf",
+  "title": "Lumina PDF - AI-Powered Document Study Companion",
+  "description": "Transform any document (PDF, DOCX, EPUB, etc.) into professional study materials with AI. Generate Cornell Notes, flashcards, quizzes, mind maps, and more.",
+  "version": "1.0.0",
+  "meta": {
+    "templateId": "python-start"
+  },
+  "input": "./INPUT_SCHEMA.json",
+  "dockerfile": "./Dockerfile",
+  "readme": "./README.md",
+  "categories": [
+    "EDUCATION",
+    "AI"
+  ],
+  "stats": {
+    "rating": 5.0
   }
+}
