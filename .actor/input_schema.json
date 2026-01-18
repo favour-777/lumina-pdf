@@ -4,21 +4,12 @@
     "schemaVersion": 1,
     "properties": {
       "fileUrls": {
-        "title": "Document URLs (Optional)",
+        "title": "Document URLs",
         "type": "string",
-        "description": "URLs to your documents (PDF, DOCX, EPUB, TXT, MD, HTML, RTF). One per line for batch processing. Leave empty if uploading files instead.",
+        "description": "URLs to your documents (PDF, DOCX, EPUB, TXT, MD, HTML, RTF). One per line for batch processing.",
         "editor": "textarea",
         "example": "https://example.com/lecture.pdf\nhttps://example.com/notes.docx",
         "prefill": ""
-      },
-      "uploadedFiles": {
-        "title": "Upload Documents (Optional)",
-        "type": "array",
-        "description": "Upload your documents directly. Supports PDF, DOCX, EPUB, TXT, MD, HTML, RTF.",
-        "editor": "file",
-        "items": {
-          "type": "string"
-        }
       },
       "outputFormats": {
         "title": "Output Formats",
