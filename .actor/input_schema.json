@@ -21,11 +21,13 @@
           "properties": {
             "url": {
               "type": "string",
-              "title": "File URL"
+              "title": "File URL",
+              "description": "Direct link to the uploaded file"
             },
             "name": {
               "type": "string",
-              "title": "File Name"
+              "title": "File Name",
+              "description": "Name of the uploaded file"
             }
           }
         }
@@ -40,7 +42,8 @@
         "items": {
           "type": "string",
           "enum": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"]
-        }
+        },
+        "uniqueItems": true
       },
       "numFlashcards": {
         "title": "Number of Flashcards",
@@ -71,3 +74,4 @@
     },
     "required": ["fileUrls"]
   }
+  
