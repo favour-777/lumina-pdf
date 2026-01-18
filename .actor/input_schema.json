@@ -15,7 +15,7 @@
         "title": "Upload Documents (Optional)",
         "type": "array",
         "description": "Upload your documents directly instead of providing URLs. Supports PDF, DOCX, EPUB, TXT, MD, HTML, RTF.",
-        "editor": "proxy",
+        "editor": "select",
         "items": {
           "type": "object",
           "properties": {
