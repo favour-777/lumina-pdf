@@ -15,7 +15,7 @@
         "title": "Output Formats",
         "type": "array",
         "description": "Select which study materials to generate (type to add)",
-        "editor": "json",
+        "editor": "select",
         "default": ["cornellNotes", "flashcards", "quiz", "summary", "mindMap"],
         "items": {
           "type": "string",
