@@ -34,13 +34,18 @@ async def main():
         num_flashcards = actor_input.get('numFlashcards', 30)
         num_quiz_questions = actor_input.get('numQuizQuestions', 20)
         difficulty_level = actor_input.get('difficultyLevel', 'mixed')
+        user_api_key = actor_input.get('anthropicApiKey', '').strip() or None
         
         Actor.log.info(f'Processing {len(file_urls)} document(s)')
         Actor.log.info(f'Output formats: {output_formats}')
+        if user_api_key:
+            Actor.log.info('Using user-provided Claude API key')
+        else:
+            Actor.log.info('Using shared Claude credits')
         
         # Initialize processors
         doc_processor = DocumentProcessor()
-        study_gen = StudyMaterialGenerator()
+        study_gen = StudyMaterialGenerator(user_api_key=user_api_key)
         export_mgr = ExportManager()
         
         # Process each document

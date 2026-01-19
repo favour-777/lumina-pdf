@@ -1,19 +1,33 @@
 """
-Study Material Generator - Uses AI to generate study materials
+Study Material Generator - Uses Claude AI to generate study materials
 """
 
-from apify import Actor
+import os
 import json
 import re
 from typing import Dict, List, Any
+import anthropic
 
 
 class StudyMaterialGenerator:
-    """Generate study materials using AI via Apify's GPT-4o-mini actor"""
+    """Generate study materials using Claude Sonnet"""
     
-    def __init__(self):
-        """Initialize generator - no API key needed, uses Apify credits"""
-        pass
+    def __init__(self, user_api_key: str = None):
+        """
+        Initialize generator
+        
+        Args:
+            user_api_key: Optional user-provided Claude API key
+                         If not provided, uses environment variable (your key)
+        """
+        # Priority: User key > Environment key
+        api_key = user_api_key or os.environ.get('ANTHROPIC_API_KEY')
+        
+        if not api_key:
+            raise ValueError("No Claude API key available. Either provide one or set ANTHROPIC_API_KEY environment variable.")
+        
+        self.client = anthropic.Anthropic(api_key=api_key)
+        self.using_user_key = bool(user_api_key)
     
     async def generate_materials(
         self,
@@ -49,53 +63,20 @@ class StudyMaterialGenerator:
         
         return materials
     
-    async def _call_gpt(self, system: str, user_prompt: str, max_tokens: int = 4000) -> str:
-        """Call GPT-4o-mini via Apify actor"""
+    def _call_claude(self, system: str, user_prompt: str, max_tokens: int = 4000) -> str:
+        """Call Claude API - synchronous because anthropic SDK doesn't support async"""
         
-        run_input = {
-            "model": "gpt-4o-mini",
-            "messages": [
-                {"role": "system", "content": system},
-                {"role": "user", "content": user_prompt}
-            ],
-            "temperature": 0.7,
-            "maxTokens": max_tokens
-        }
-        
-        run = await Actor.call(
-            actor_id='apify/chatgpt-gpt-4o-mini',
-            run_input=run_input
+        message = self.client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=max_tokens,
+            system=system,
+            messages=[{
+                "role": "user",
+                "content": user_prompt
+            }]
         )
         
-        # Get dataset items from the run
-        dataset_id = run.get('defaultDatasetId')
-        if not dataset_id:
-            raise Exception("No dataset returned from GPT call")
-        
-        dataset_items = await Actor.apify_client.dataset(dataset_id).list_items()
-        
-        if not dataset_items or not dataset_items.items:
-            raise Exception("No response from GPT")
-        
-        # Extract the response text
-        response_item = dataset_items.items[0]
-        
-        # Handle different response formats
-        if isinstance(response_item, dict):
-            if 'choices' in response_item:
-                return response_item['choices'][0]['message']['content']
-            elif 'message' in response_item:
-                return response_item['message']['content']
-            elif 'content' in response_item:
-                return response_item['content']
-            elif 'text' in response_item:
-                return response_item['text']
-        
-        # If we have a string, return it
-        if isinstance(response_item, str):
-            return response_item
-        
-        raise Exception(f"Unexpected response format: {type(response_item)}")
+        return message.content[0].text
     
     async def _generate_summary(self, text: str, metadata: Dict) -> Dict:
         """Generate executive summary with key points"""
@@ -120,7 +101,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
     "conclusion": "Final takeaway or conclusion"
 }}"""
         
-        response = await self._call_gpt(system, prompt, max_tokens=2000)
+        response = self._call_claude(system, prompt, max_tokens=2000)
         return self._parse_json_response(response)
     
     async def _generate_cornell_notes(self, text: str, metadata: Dict) -> Dict:
@@ -144,7 +125,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
 
 Generate 10-15 cue-note pairs that cover the main concepts."""
         
-        response = await self._call_gpt(system, prompt, max_tokens=3000)
+        response = self._call_claude(system, prompt, max_tokens=3000)
         return self._parse_json_response(response)
     
     async def _generate_flashcards(
@@ -186,7 +167,7 @@ Respond with ONLY a JSON array (no markdown, no backticks) with this structure:
 
 Make flashcards that test real understanding, not just memorization."""
         
-        response = await self._call_gpt(system, prompt, max_tokens=4000)
+        response = self._call_claude(system, prompt, max_tokens=4000)
         return self._parse_json_response(response)
     
     async def _generate_quiz(
@@ -224,7 +205,7 @@ Respond with ONLY a JSON object (no markdown, no backticks) with this structure:
 
 Create questions that test understanding, not just recall."""
         
-        response = await self._call_gpt(system, prompt, max_tokens=4000)
+        response = self._call_claude(system, prompt, max_tokens=4000)
         return self._parse_json_response(response)
     
     async def _generate_mind_map(self, text: str, metadata: Dict) -> str:
@@ -253,7 +234,7 @@ mindmap
 
 Keep it clear and organized with 3-5 main branches."""
         
-        response = await self._call_gpt(system, prompt, max_tokens=1500)
+        response = self._call_claude(system, prompt, max_tokens=1500)
         
         # Clean up the response
         mermaid_code = response.strip()
@@ -263,7 +244,7 @@ Keep it clear and organized with 3-5 main branches."""
         return mermaid_code.strip()
     
     def _parse_json_response(self, response: str) -> Any:
-        """Parse JSON from AI response, handling markdown code blocks"""
+        """Parse JSON from Claude response, handling markdown code blocks"""
         
         # Remove markdown code blocks if present
         response = response.strip()

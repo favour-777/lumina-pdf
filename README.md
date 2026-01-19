@@ -130,7 +130,7 @@ Import directly to Notion with:
 **Flashcard Count**: 5-100 cards  
 **Quiz Questions**: 5-50 questions  
 **Difficulty**: Easy, Medium, Hard, or Mixed  
-**No API Key Required**: Uses your Apify credits automatically
+**API Key**: Optional - bring your own for unlimited usage, or use shared credits
 
 ---
 
@@ -143,6 +143,7 @@ Import directly to Notion with:
 | **numFlashcards** | integer | 30 | Number of flashcards (5-100) |
 | **numQuizQuestions** | integer | 20 | Number of quiz questions (5-50) |
 | **difficultyLevel** | string | mixed | easy/medium/hard/mixed |
+| **anthropicApiKey** | string | optional | Your Claude API key (optional - use shared credits if empty) |
 | **useApifyIntegration** | boolean | true | Use built-in processing (no API key needed) |
 | **anthropicApiKey** | string | optional | Your Claude API key for unlimited processing |
 
@@ -372,26 +373,33 @@ Import directly to Notion with:
 
 ## 📈 Pricing
 
-### Apify Credits
-Lumina PDF uses your Apify platform credits automatically - no external API keys needed!
+### Option 1: Shared Credits (Default)
+No API key needed! Just use the actor and pay a small fee per document.
 
 **Cost per document:**
-- 💰 **Small documents** (<10 pages): ~$0.001-0.003
-- 💰 **Medium documents** (10-50 pages): ~$0.003-0.008
-- 💰 **Large documents** (50+ pages): ~$0.008-0.015
+- 💰 **Small documents** (<10 pages): ~$0.005-0.010
+- 💰 **Medium documents** (10-50 pages): ~$0.010-0.020
+- 💰 **Large documents** (50+ pages): ~$0.020-0.040
 
-### Free Tier
-- ✅ **Apify free tier**: $5 free credits monthly
-- ✅ **~500-5,000 documents** per month on free tier
-- ✅ All output formats included
-- ✅ No external accounts needed
+**Perfect for**: Occasional use, trying out the actor, small batches
 
-### Paid Plans
-- 💳 **Personal**: $49/month for unlimited processing
-- 💳 **Team**: Custom pricing for high volume
-- 💳 **Pay-as-you-go**: Only pay for what you use
+### Option 2: Your Own API Key (Unlimited)
+Provide your Claude API key and pay Anthropic directly.
 
-**No external API keys. No subscriptions. Just use your Apify credits!**
+**Cost per document:**
+- 💰 **Small documents** (<10 pages): ~$0.003-0.008
+- 💰 **Medium documents** (10-50 pages): ~$0.008-0.015
+- 💰 **Large documents** (50+ pages): ~$0.015-0.030
+
+**Perfect for**: Heavy usage, processing hundreds of documents, cost optimization
+
+### How to Get Your Own API Key
+1. Go to [console.anthropic.com](https://console.anthropic.com)
+2. Create account and add $5+ credits
+3. Generate API key
+4. Paste in "Claude API Key" field
+
+**Both options work great - choose what fits your needs!**
 
 ---
 

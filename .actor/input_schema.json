@@ -50,6 +50,13 @@
       "enumTitles": ["😊 Easy", "😐 Medium", "😤 Hard", "🎯 Mixed"],
       "default": "mixed",
       "editor": "select"
+    },
+    "anthropicApiKey": {
+      "title": "🔑 Claude API Key (Optional)",
+      "type": "string",
+      "description": "Your Claude API key from console.anthropic.com. Leave empty to use shared credits (small fee per document).",
+      "editor": "textfield",
+      "isSecret": true
     }
   },
   "required": ["fileUrls"]
