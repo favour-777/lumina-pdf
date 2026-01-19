@@ -326,41 +326,55 @@ class ExportManager:
             spaceBefore=12
         )
         
+        # Helper function to escape XML characters
+        def escape_xml(text):
+            """Escape special XML characters in text"""
+            if not text:
+                return ""
+            text = str(text)
+            text = text.replace('&', '&amp;')
+            text = text.replace('<', '&lt;')
+            text = text.replace('>', '&gt;')
+            text = text.replace('"', '&quot;')
+            text = text.replace("'", '&apos;')
+            return text
+        
         # Title
-        story.append(Paragraph(f"📚 Study Guide: {metadata.get('filename', 'Document')}", title_style))
+        story.append(Paragraph(f"Study Guide: {escape_xml(metadata.get('filename', 'Document'))}", title_style))
         story.append(Spacer(1, 0.2*inch))
         
         # Metadata
-        story.append(Paragraph(f"<b>Source:</b> {metadata.get('source_url', 'N/A')}", styles['Normal']))
-        story.append(Paragraph(f"<b>Processed:</b> {metadata.get('processed_at', 'N/A')}", styles['Normal']))
+        story.append(Paragraph(f"<b>Source:</b> {escape_xml(metadata.get('source_url', 'N/A'))}", styles['Normal']))
+        story.append(Paragraph(f"<b>Processed:</b> {escape_xml(metadata.get('processed_at', 'N/A'))}", styles['Normal']))
         story.append(Spacer(1, 0.3*inch))
         
         # Summary
         if 'summary' in materials:
             summary = materials['summary']
-            story.append(Paragraph("📋 Executive Summary", heading_style))
-            story.append(Paragraph(summary.get('overview', ''), styles['Normal']))
+            story.append(Paragraph("Executive Summary", heading_style))
+            story.append(Paragraph(escape_xml(summary.get('overview', '')), styles['Normal']))
             story.append(Spacer(1, 0.2*inch))
             
             if summary.get('keyPoints'):
                 story.append(Paragraph("<b>Key Points:</b>", styles['Normal']))
                 for point in summary['keyPoints']:
-                    story.append(Paragraph(f"• <b>{point['point']}</b>: {point.get('details', '')}", styles['Normal']))
+                    point_text = f"• <b>{escape_xml(point['point'])}</b>: {escape_xml(point.get('details', ''))}"
+                    story.append(Paragraph(point_text, styles['Normal']))
                 story.append(Spacer(1, 0.2*inch))
         
         # Cornell Notes
         if 'cornellNotes' in materials:
             notes = materials['cornellNotes']
-            story.append(Paragraph("📝 Cornell Notes", heading_style))
+            story.append(Paragraph("Cornell Notes", heading_style))
             
-            # Create table
+            # Create table with escaped content
             table_data = [['Cues', 'Notes']]
             cues = notes.get('cues', [])
             note_items = notes.get('notes', [])
             
             for i in range(max(len(cues), len(note_items))):
-                cue = cues[i] if i < len(cues) else ''
-                note = note_items[i] if i < len(note_items) else ''
+                cue = escape_xml(cues[i]) if i < len(cues) else ''
+                note = escape_xml(note_items[i]) if i < len(note_items) else ''
                 table_data.append([cue, note])
             
             table = Table(table_data, colWidths=[2*inch, 4*inch])
@@ -382,12 +396,12 @@ class ExportManager:
         # Flashcards
         if 'flashcards' in materials:
             story.append(PageBreak())
-            story.append(Paragraph("🎴 Flashcards", heading_style))
+            story.append(Paragraph("Flashcards", heading_style))
             
             for i, card in enumerate(materials['flashcards'], 1):
                 story.append(Paragraph(f"<b>Card {i}</b>", styles['Normal']))
-                story.append(Paragraph(f"<i>Q: {card['front']}</i>", styles['Normal']))
-                story.append(Paragraph(f"A: {card['back']}", styles['Normal']))
+                story.append(Paragraph(f"<i>Q: {escape_xml(card['front'])}</i>", styles['Normal']))
+                story.append(Paragraph(f"A: {escape_xml(card['back'])}", styles['Normal']))
                 story.append(Spacer(1, 0.1*inch))
         
         # Build PDF
