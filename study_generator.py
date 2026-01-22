@@ -1,6 +1,6 @@
-“””
+"""
 Study Material Generator - Uses Claude AI to generate study materials
-“””
+"""
 
 import os
 import json
